@@ -1,0 +1,354 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Early Childhood Services in Victoria: Data Trends and Breakdown\"\n",
+        "toc: true\n",
+        "toc-location: body\n",
+        "format:\n",
+        "  closeread-html:\n",
+        "    code-fold: true\n",
+        "    cr-style:\n",
+        "      narrative-background-color: \"#ffffff\"\n",
+        "      narrative-background-color-sidebar: \"#ffffff\"\n",
+        "      section-background-color: \"#ffffff\"\n",
+        "---\n",
+        "\n",
+        "This scrolly telling document outlines the performance of Victorian early childhood education and care services against the National Quality Standard (NQS) over the past decade. The analysis is based on data sourced from the Australian Childrens' Education & Care Quality Authority's (ACECQA) National Quality Standard datasets. \n",
+        "\n",
+        "This analysis is broken into two sections: service quality and service count.  "
+      ],
+      "id": "2a668f0e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: setup\n",
+        "#| warning: false\n",
+        "import pandas as pd\n",
+        "from script.plotting import plot_nqs_performance, plot_rating_distribution_1, plot_seifa_distribution, plot_service_counts_timeseries, plot_management_type_stack, plot_management_split_comparison\n",
+        "\n",
+        "final_df = pd.read_csv('script/NQAITS_Quarterly_Data.csv', parse_dates=['Source_Quarter'])\n",
+        "final_df_vic = final_df[final_df['Managing Jurisdiction'] == 'VIC']"
+      ],
+      "id": "setup",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Service Quality\n",
+        ":::{.cr-section}\n",
+        "::: {#cr-plot-rating-yoy style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "8f1a749b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_nqs_performance(final_df_vic, show_yoy=False)\n",
+        "fig.show()"
+      ],
+      "id": "4464ce23",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Almost 90% of services are meeting or exceeding the NQS, with sessional services exceeding LDC by 8% pt.   @cr-plot-rating-yoy\n",
+        "\n",
+        "\n",
+        "::: {#cr-plot-rating-noyoy style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "e4f79187"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_nqs_performance(final_df_vic, show_yoy=True)\n",
+        "fig.show()"
+      ],
+      "id": "618e790a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Change in this figure remains low, sitting around +1% YoY for Q4 2025. @cr-plot-rating-noyoy\n",
+        "\n",
+        "\n",
+        "::: {#cr-plot-rating-dist-full style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "722ac087"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_rating_distribution_1(final_df_vic, highlight_rating = None)\n",
+        "fig.show()"
+      ],
+      "id": "e8fbb1e2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Most services that are not meeting the NQS are either for-profit or on-site (state school) services. @cr-plot-rating-dist-full\n",
+        "\n",
+        "::: {#cr-plot-rating-dist-highlighted style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "cc56c388"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_rating_distribution_1(final_df_vic, highlight_rating='Exceeding NQS')\n",
+        "fig.show()"
+      ],
+      "id": "dba6e3b5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Non-profits tend to have a higher proportion of services that exceed the NQS, especially for co-located services (state and independet).@cr-plot-rating-dist-highlighted\n",
+        "\n",
+        "::: {#cr-plot-rating-SEIFA-full style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "4e76e291"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_seifa_distribution(final_df_vic, highlight_rating = None)\n",
+        "fig.show()"
+      ],
+      "id": "327e81fe",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "This figure compares overall NQS ratings against the SEIFA decile, which measures socioeconomic advantage and disadvantage of an area. The SEIFA metric is broken into ten groups, referred to as deciles, with 1 representing most disadvantage.  @cr-plot-rating-SEIFA-full\n",
+        "\n",
+        "::: {#cr-plot-rating-SEIFA-working style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "8bcb1c5f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Working Towards NQS')\n",
+        "fig.show()"
+      ],
+      "id": "be804de1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Areas with higher incidence of disadvantage have more services that do not meeting the NQS. @cr-plot-rating-SEIFA-working\n",
+        "\n",
+        "::: {#cr-plot-rating-SEIFA-exceeding style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "915075e7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Exceeding NQS')\n",
+        "fig.show()"
+      ],
+      "id": "135a2ef4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "The inverse relationship is true for services exceeding the NQS. @cr-plot-rating-SEIFA-exceeding\n",
+        "\n",
+        "::: {#cr-plot-rating-SEIFA-excellent style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "b2461cc5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Excellent')\n",
+        "fig.show()"
+      ],
+      "id": "5eb2340e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "For 'Excellent' rated services, we see a two-peak distribution for the most advantaged and the least advantaged areas. For the least advantaged areas, this may indicate how needs-based funding, such as SRF, is being used effectively by some services to deliver high quality education and care. @cr-plot-rating-SEIFA-excellent\n",
+        "\n",
+        ":::\n",
+        "\n",
+        "# Service Count and Types\n",
+        ":::{.cr-section layout=\"sidebar-left\"}\n",
+        "::: {#cr-plot-service-trend-all style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "6cdbf389"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_service_counts_timeseries(final_df, filter_ldc_psk = False)\n",
+        "fig.show()"
+      ],
+      "id": "7717d2c8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "Growth in the number of services for the entire ECEC sector remains stead at around 1.5% YoY. @cr-plot-service-trend-all\n",
+        "\n",
+        "\n",
+        "::: {#cr-plot-service-trend-vic style=\"width: 1000px; height: 500px;\"}"
+      ],
+      "id": "5c75e84a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig = plot_service_counts_timeseries(final_df, filter_ldc_psk = True)\n",
+        "fig.show()"
+      ],
+      "id": "318e97a4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        "For kindergarten services (sessional and long day care), growth in the number of services is higher, but remains steady at 3% YoY. @cr-plot-service-trend-vic\n",
+        ":::\n",
+        "\n",
+        "For-profit operators remain the largest type of service provider, with this composition profile having remained almost the same over the past decade."
+      ],
+      "id": "088770c7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| fig-align: center\n",
+        "#| column: page\n",
+        "fig = plot_management_type_stack(final_df_vic)\n",
+        "fig.show()"
+      ],
+      "id": "411747ca",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Sesssional providers are typically more likely to be non-profit, while long day care providers are more likely to be for-profit."
+      ],
+      "id": "fe16c8a1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| fig-align: center\n",
+        "#| column: page\n",
+        "fig = plot_management_split_comparison(final_df_vic)\n",
+        "fig.show()"
+      ],
+      "id": "136c8042",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Notes\n",
+        "**Source of Data**  \n",
+        "This project utilizes data sourced from the Australian Children’s Education & Care Quality Authority (ACECQA) National Quality Standard (NQS) datasets. While every effort has been made to ensure the accuracy of the data presentation, the original raw data is subject to updates and revisions by the primary source.\n",
+        "\n",
+        "**Professional Independence**  \n",
+        "The views, interpretations, and conclusions expressed in this project are solely my own. They do not represent the official policy, position, or views of ACECQA, nor do they reflect the views of my current or previous employers. This analysis is an independent exercise in data storytelling and should not be construed as an official industry report.\n",
+        "\n",
+        "**No Liability**  \n",
+        "The information provided is for educational and illustrative purposes only. I am not liable for any errors, omissions, or any losses, injuries, or damages arising from the display or use of this information. Users are responsible for their own interpretation of the data and should consult official ACEQA documentation for regulatory or compliance-based decision-making.\n",
+        "\n",
+        "**AI Use**\n",
+        "The narrative structure, data interpretation, and analytical conclusions of this project are the product of human authorship. All storytelling elements, the overarching logic of the analysis, and the final verification of data trends were conducted by the author.\n",
+        "\n",
+        "AI was used as a tool in the technical development of this project. Specifically:\n",
+        "\n",
+        "Data Preparation: AI was used to assist in writing and refactoring Python scripts for cleaning and reshaping the ACEQA NQS datasets.\n",
+        "\n",
+        "Visualisation Code: The code for the interactive Plotly visualisations.\n",
+        "\n",
+        "AI assisted in writing the above disclaimers."
+      ],
+      "id": "e737a21b"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "virtual_test",
+      "language": "python",
+      "display_name": "Virtual_Test",
+      "path": "C:\\Users\\leonl\\AppData\\Roaming\\jupyter\\kernels\\virtual_test"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

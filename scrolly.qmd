@@ -1,0 +1,156 @@
+---
+title: "Early Childhood Services in Victoria: Data Trends and Breakdown"
+toc: true
+toc-location: body
+format:
+  closeread-html:
+    code-fold: true
+    cr-style:
+      narrative-background-color: "#ffffff"
+      narrative-background-color-sidebar: "#ffffff"
+      section-background-color: "#ffffff"
+---
+
+This scrolly telling document outlines the performance of Victorian early childhood education and care services against the National Quality Standard (NQS) over the past decade. The analysis is based on data sourced from the Australian Childrens' Education & Care Quality Authority's (ACECQA) National Quality Standard datasets. 
+
+This analysis is broken into two sections: service quality and service count.  
+
+```{python}
+#| label: setup
+#| warning: false
+#| message: false
+import pandas as pd
+from script.plotting import plot_nqs_performance, plot_rating_distribution_1, plot_seifa_distribution, plot_service_counts_timeseries, plot_management_type_stack, plot_management_split_comparison
+
+final_df = pd.read_csv('script/NQAITS_Quarterly_Data.csv', parse_dates=['Source_Quarter'])
+final_df_vic = final_df[final_df['Managing Jurisdiction'] == 'VIC']
+```
+
+# Service Quality
+:::{.cr-section}
+::: {#cr-plot-rating-yoy style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_nqs_performance(final_df_vic, show_yoy=False)
+fig.show()
+```
+:::
+Almost 90% of services are meeting or exceeding the NQS, with sessional services exceeding LDC by 8% pt.   @cr-plot-rating-yoy
+
+
+::: {#cr-plot-rating-noyoy style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_nqs_performance(final_df_vic, show_yoy=True)
+fig.show()
+```
+:::
+Change in this figure remains low, sitting around +1% YoY for Q4 2025. @cr-plot-rating-noyoy
+
+
+::: {#cr-plot-rating-dist-full style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_rating_distribution_1(final_df_vic, highlight_rating = None)
+fig.show()
+```
+:::
+Most services that are not meeting the NQS are either for-profit or on-site (state school) services. @cr-plot-rating-dist-full
+
+::: {#cr-plot-rating-dist-highlighted style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_rating_distribution_1(final_df_vic, highlight_rating='Exceeding NQS')
+fig.show()
+```
+:::
+Non-profits tend to have a higher proportion of services that exceed the NQS, especially for co-located services (state and independet).@cr-plot-rating-dist-highlighted
+
+::: {#cr-plot-rating-SEIFA-full style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_seifa_distribution(final_df_vic, highlight_rating = None)
+fig.show()
+```
+:::
+This figure compares overall NQS ratings against the SEIFA decile, which measures socioeconomic advantage and disadvantage of an area. The SEIFA metric is broken into ten groups, referred to as deciles, with 1 representing most disadvantage.  @cr-plot-rating-SEIFA-full
+
+::: {#cr-plot-rating-SEIFA-working style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Working Towards NQS')
+fig.show()
+```
+:::
+Areas with higher incidence of disadvantage have more services that do not meeting the NQS. @cr-plot-rating-SEIFA-working
+
+::: {#cr-plot-rating-SEIFA-exceeding style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Exceeding NQS')
+fig.show()
+```
+:::
+The inverse relationship is true for services exceeding the NQS. @cr-plot-rating-SEIFA-exceeding
+
+::: {#cr-plot-rating-SEIFA-excellent style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_seifa_distribution(final_df_vic, highlight_rating = 'Excellent')
+fig.show()
+```
+:::
+For 'Excellent' rated services, we see a two-peak distribution for the most advantaged and the least advantaged areas. For the least advantaged areas, this may indicate how needs-based funding, such as SRF, is being used effectively by some services to deliver high quality education and care. @cr-plot-rating-SEIFA-excellent
+
+:::
+
+# Service Count and Types
+:::{.cr-section layout="sidebar-left"}
+::: {#cr-plot-service-trend-all style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_service_counts_timeseries(final_df, filter_ldc_psk = False)
+fig.show()
+```
+:::
+Growth in the number of services for the entire ECEC sector remains stead at around 1.5% YoY. @cr-plot-service-trend-all
+
+
+::: {#cr-plot-service-trend-vic style="width: 1000px; height: 500px;"}
+```{python}
+fig = plot_service_counts_timeseries(final_df, filter_ldc_psk = True)
+fig.show()
+```
+:::
+For kindergarten services (sessional and long day care), growth in the number of services is higher, but remains steady at 3% YoY. @cr-plot-service-trend-vic
+:::
+
+For-profit operators remain the largest type of service provider, with this composition profile having remained almost the same over the past decade.
+
+```{python}
+#| fig-align: center
+#| column: page
+fig = plot_management_type_stack(final_df_vic)
+fig.show()
+```
+
+Sesssional providers are typically more likely to be non-profit, while long day care providers are more likely to be for-profit.
+
+```{python}
+#| fig-align: center
+#| column: page
+fig = plot_management_split_comparison(final_df_vic)
+fig.show()
+```
+
+# Notes
+**Source of Data**  
+This project utilizes data sourced from the Australian Children’s Education & Care Quality Authority (ACECQA) National Quality Standard (NQS) datasets. While every effort has been made to ensure the accuracy of the data presentation, the original raw data is subject to updates and revisions by the primary source.
+
+**Professional Independence**  
+The views, interpretations, and conclusions expressed in this project are solely my own. They do not represent the official policy, position, or views of ACECQA, nor do they reflect the views of my current or previous employers. This analysis is an independent exercise in data storytelling and should not be construed as an official industry report.
+
+**No Liability**  
+The information provided is for educational and illustrative purposes only. I am not liable for any errors, omissions, or any losses, injuries, or damages arising from the display or use of this information. Users are responsible for their own interpretation of the data and should consult official ACEQA documentation for regulatory or compliance-based decision-making.
+
+**AI Use**
+The narrative structure, data interpretation, and analytical conclusions of this project are the product of human authorship. All storytelling elements, the overarching logic of the analysis, and the final verification of data trends were conducted by the author.
+
+AI was used as a tool in the technical development of this project. Specifically:
+
+Data Preparation: AI was used to assist in writing and refactoring Python scripts for cleaning and reshaping the ACEQA NQS datasets.
+
+Visualisation Code: The code for the interactive Plotly visualisations.
+
+AI assisted in writing the above disclaimers.
